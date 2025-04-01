@@ -7,6 +7,7 @@ import nibble/lexer
 pub type Token {
   Num(Int)
   Plus
+  Minus
   LParen
   RParen
 }
@@ -18,6 +19,7 @@ pub fn main() {
       lexer.token("(", LParen),
       lexer.token(")", RParen),
       lexer.token("+", Plus),
+      lexer.token("-", Minus),
       lexer.whitespace(Nil)
         |> lexer.ignore,
     ])
@@ -30,14 +32,27 @@ pub fn main() {
     }
   }
 
+  let function_parser = {
+    use tok <- nibble.take_map("expected + or -")
+    case tok {
+      Plus -> Some(Plus)
+      Minus -> Some(Minus)
+      _ -> None
+    }
+  }
+
   let hobbylisp_parser = {
     use _ <- nibble.do(nibble.token(LParen))
-    use _ <- nibble.do(nibble.token(Plus))
+    use function <- nibble.do(function_parser)
     use x <- nibble.do(int_parser)
     use y <- nibble.do(int_parser)
     use _ <- nibble.do(nibble.token(RParen))
 
-    nibble.return(x + y)
+    case function {
+      Plus -> nibble.return(x + y)
+      Minus -> nibble.return(x - y)
+      _ -> panic
+    }
   }
 
   let assert Ok(tokens) = lexer.run("(+ 1 2)", hobbylisp_lexer)
