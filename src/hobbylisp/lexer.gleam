@@ -1,7 +1,7 @@
-import hobbylisp/token
+import hobbylisp/token.{type Token}
 import nibble/lexer
 
-pub fn lexer() {
+pub fn lexer() -> lexer.Lexer(Token, Nil) {
   lexer.simple([
     lexer.int(token.Num),
     lexer.token("(", token.LParen),

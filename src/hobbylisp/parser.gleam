@@ -1,8 +1,8 @@
 import gleam/option.{None, Some}
 import hobbylisp/token.{type Token}
-import nibble
+import nibble.{type Parser}
 
-pub fn parser() {
+pub fn parser() -> Parser(Int, Token, Nil) {
   use _ <- nibble.do(nibble.token(token.LParen))
   use function <- nibble.do(function_parser())
   use x <- nibble.do(int_parser())
